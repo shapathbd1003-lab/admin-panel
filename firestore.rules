@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Providers collection
+    match /providers/{providerId} {
+      // Android app can create its own provider document
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.uid;
+
+      // Anyone authenticated can read (app checks own approval status)
+      allow read: if request.auth != null;
+
+      // Only admin can update isApproved field
+      // Admin identity is enforced via custom claim set in Firebase console
+      allow update: if request.auth != null
+                    && request.auth.token.admin == true
+                    // Prevent providers from approving themselves
+                    && request.auth.uid != providerId;
+
+      // Only admin can delete
+      allow delete: if request.auth != null
+                    && request.auth.token.admin == true;
+    }
+
+    // Admins collection (optional: store admin emails for reference)
+    match /admins/{adminId} {
+      allow read, write: if request.auth != null
+                         && request.auth.token.admin == true;
+    }
+  }
+}
