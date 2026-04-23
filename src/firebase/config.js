@@ -2,31 +2,17 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 
-const {
-  VITE_FIREBASE_API_KEY:            apiKey,
-  VITE_FIREBASE_AUTH_DOMAIN:        authDomain,
-  VITE_FIREBASE_PROJECT_ID:         projectId,
-  VITE_FIREBASE_STORAGE_BUCKET:     storageBucket,
-  VITE_FIREBASE_MESSAGING_SENDER_ID: messagingSenderId,
-  VITE_FIREBASE_APP_ID:             appId,
-} = import.meta.env
-
-// Detect placeholder / missing config
-const isConfigured =
-  apiKey && apiKey !== 'your_api_key_here' &&
-  projectId && projectId !== 'your_project_id'
-
-export const firebaseReady = isConfigured
-
-let app, db, auth
-
-if (isConfigured) {
-  app  = initializeApp({ apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId })
-  db   = getFirestore(app)
-  auth = getAuth(app)
-} else {
-  db   = null
-  auth = null
+const firebaseConfig = {
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY            || 'AIzaSyDcElwAuooYlJC3jHF4PaMKW265V0lQL1Y',
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN        || 'servicepro-fc58a.firebaseapp.com',
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID         || 'servicepro-fc58a',
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET     || 'servicepro-fc58a.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '749521391969',
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID             || '1:749521391969:web:8ae8ddcf7bd87f3367b520',
 }
 
-export { db, auth }
+const app  = initializeApp(firebaseConfig)
+
+export const db            = getFirestore(app)
+export const auth          = getAuth(app)
+export const firebaseReady = true
