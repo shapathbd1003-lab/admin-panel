@@ -1,36 +1,61 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { useNavigate, Link } from 'react-router-dom'
-import { auth } from '../firebase/config'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { auth, db } from '../firebase/config'
 
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_REGISTER_KEY ?? ''
 
 const ERROR_MESSAGES = {
-  'auth/email-already-in-use':    'An account with this email already exists.',
-  'auth/invalid-email':           'Please enter a valid email address.',
-  'auth/weak-password':           'Password must be at least 6 characters.',
-  'auth/network-request-failed':  'Network error. Check your connection.',
+  'auth/email-already-in-use':   'An account with this email already exists.',
+  'auth/invalid-email':          'Please enter a valid email address.',
+  'auth/weak-password':          'Password must be at least 6 characters.',
+  'auth/network-request-failed': 'Network error. Check your connection.',
 }
 
 export default function Register() {
-  const navigate = useNavigate()
+  const navigate          = useNavigate()
+  const [searchParams]    = useSearchParams()
+  const inviteToken       = searchParams.get('invite')
 
-  const [name,       setName]       = useState('')
-  const [email,      setEmail]      = useState('')
-  const [password,   setPassword]   = useState('')
-  const [confirm,    setConfirm]    = useState('')
-  const [secretKey,  setSecretKey]  = useState('')
-  const [showPass,   setShowPass]   = useState(false)
-  const [error,      setError]      = useState('')
-  const [loading,    setLoading]    = useState(false)
+  const [name,        setName]        = useState('')
+  const [email,       setEmail]       = useState('')
+  const [password,    setPassword]    = useState('')
+  const [confirm,     setConfirm]     = useState('')
+  const [secretKey,   setSecretKey]   = useState('')
+  const [showPass,    setShowPass]    = useState(false)
+  const [error,       setError]       = useState('')
+  const [loading,     setLoading]     = useState(false)
+  const [inviteValid, setInviteValid] = useState(null) // null=checking, true, false
+  const [inviteEmail, setInviteEmail] = useState('')
+
+  // Validate invite token if present
+  useEffect(() => {
+    if (!inviteToken) { setInviteValid(null); return }
+    async function checkInvite() {
+      try {
+        const snap = await getDoc(doc(db, 'invites', inviteToken))
+        if (!snap.exists())            { setInviteValid(false); return }
+        const data = snap.data()
+        if (data.used)                 { setInviteValid(false); return }
+        if (data.expiresAt?.toDate() < new Date()) { setInviteValid(false); return }
+        setInviteValid(true)
+        if (data.email) { setEmail(data.email); setInviteEmail(data.email) }
+      } catch {
+        setInviteValid(false)
+      }
+    }
+    checkInvite()
+  }, [inviteToken])
 
   function validate() {
-    if (!name.trim())     return 'Full name is required.'
-    if (!email.trim())    return 'Email is required.'
-    if (!password)        return 'Password is required.'
+    if (!name.trim())      return 'Full name is required.'
+    if (!email.trim())     return 'Email is required.'
+    if (!password)         return 'Password is required.'
     if (password.length < 6) return 'Password must be at least 6 characters.'
-    if (password !== confirm) return 'Passwords do not match.'
-    if (ADMIN_KEY && secretKey !== ADMIN_KEY) return 'Invalid admin registration key.'
+    if (password !== confirm)  return 'Passwords do not match.'
+    if (!inviteToken && ADMIN_KEY && secretKey !== ADMIN_KEY)
+      return 'Invalid admin registration key.'
     return null
   }
 
@@ -44,6 +69,12 @@ export default function Register() {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email.trim(), password)
       await updateProfile(user, { displayName: name.trim() })
+
+      // Mark invite as used
+      if (inviteToken && inviteValid) {
+        await updateDoc(doc(db, 'invites', inviteToken), { used: true, usedBy: email.trim(), usedAt: new Date() })
+      }
+
       navigate('/', { replace: true })
     } catch (err) {
       setError(ERROR_MESSAGES[err.code] ?? 'Registration failed. Please try again.')
@@ -52,7 +83,35 @@ export default function Register() {
     }
   }
 
-  function clearError() { setError('') }
+  // Invalid invite token
+  if (inviteToken && inviteValid === false) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+          <div className="login-logo">
+            <div className="logo-circle">⛔</div>
+            <h1>Invalid Link</h1>
+            <p>This invite link has expired or already been used.</p>
+          </div>
+          <div className="login-footer" style={{ marginTop: 20 }}>
+            <Link to="/login" style={{ color: 'var(--primary)' }}>← Back to Login</Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Checking invite token
+  if (inviteToken && inviteValid === null) {
+    return (
+      <div className="login-page">
+        <div className="login-card" style={{ textAlign: 'center' }}>
+          <div className="spinner" style={{ margin: '20px auto' }} />
+          <p style={{ color: 'var(--text-muted)' }}>Validating invite link...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="login-page">
@@ -61,14 +120,14 @@ export default function Register() {
         <div className="login-logo">
           <div className="logo-circle">🔧</div>
           <h1>Create Admin Account</h1>
-          <p>Register to manage ServicePro platform</p>
+          <p>
+            {inviteToken && inviteValid
+              ? '✅ Valid invite link — fill in your details'
+              : 'Register to manage ServicePro platform'}
+          </p>
         </div>
 
-        {error && (
-          <div className="error-msg">
-            <span>⚠</span> {error}
-          </div>
-        )}
+        {error && <div className="error-msg"><span>⚠</span> {error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -78,9 +137,9 @@ export default function Register() {
               className={`form-control ${error ? 'error-input' : ''}`}
               placeholder="Your full name"
               value={name}
-              onChange={e => { setName(e.target.value); clearError() }}
-              autoComplete="name"
+              onChange={e => { setName(e.target.value); setError('') }}
               autoFocus
+              autoComplete="name"
             />
           </div>
 
@@ -91,7 +150,8 @@ export default function Register() {
               className={`form-control ${error ? 'error-input' : ''}`}
               placeholder="admin@servicepro.com"
               value={email}
-              onChange={e => { setEmail(e.target.value); clearError() }}
+              onChange={e => { setEmail(e.target.value); setError('') }}
+              readOnly={!!inviteEmail}
               autoComplete="email"
             />
           </div>
@@ -104,7 +164,7 @@ export default function Register() {
                 className={`form-control ${error ? 'error-input' : ''}`}
                 placeholder="Minimum 6 characters"
                 value={password}
-                onChange={e => { setPassword(e.target.value); clearError() }}
+                onChange={e => { setPassword(e.target.value); setError('') }}
                 autoComplete="new-password"
                 style={{ paddingRight: 44 }}
               />
@@ -130,12 +190,13 @@ export default function Register() {
               className={`form-control ${error && password !== confirm ? 'error-input' : ''}`}
               placeholder="Re-enter your password"
               value={confirm}
-              onChange={e => { setConfirm(e.target.value); clearError() }}
+              onChange={e => { setConfirm(e.target.value); setError('') }}
               autoComplete="new-password"
             />
           </div>
 
-          {ADMIN_KEY && (
+          {/* Only show secret key field if no valid invite and key is configured */}
+          {!inviteToken && ADMIN_KEY && (
             <div className="form-group">
               <label>Admin Registration Key</label>
               <input
@@ -143,7 +204,7 @@ export default function Register() {
                 className={`form-control ${error && secretKey !== ADMIN_KEY ? 'error-input' : ''}`}
                 placeholder="Enter the admin secret key"
                 value={secretKey}
-                onChange={e => { setSecretKey(e.target.value); clearError() }}
+                onChange={e => { setSecretKey(e.target.value); setError('') }}
                 autoComplete="off"
               />
               <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
@@ -163,17 +224,13 @@ export default function Register() {
                 <div className="spinner spinner-sm" style={{ borderTopColor: 'white', borderColor: 'rgba(255,255,255,0.3)' }} />
                 Creating account...
               </>
-            ) : (
-              'Create Account →'
-            )}
+            ) : 'Create Account →'}
           </button>
         </form>
 
         <div className="login-footer" style={{ flexDirection: 'column', gap: 8 }}>
           <span>Already have an account?{' '}
-            <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
-              Sign in
-            </Link>
+            <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link>
           </span>
           <span>🔒 Secure admin access only</span>
         </div>

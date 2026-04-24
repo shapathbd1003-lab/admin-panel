@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { firebaseReady } from './firebase/config'
-import Login          from './pages/Login'
-import Register       from './pages/Register'
-import Setup          from './pages/Setup'
-import Dashboard      from './pages/Dashboard'
-import ProviderDetail from './pages/ProviderDetail'
-import LoadingSpinner from './components/LoadingSpinner'
+import Login           from './pages/Login'
+import Register        from './pages/Register'
+import ForgotPassword  from './pages/ForgotPassword'
+import Setup           from './pages/Setup'
+import Dashboard       from './pages/Dashboard'
+import ProviderDetail  from './pages/ProviderDetail'
+import LoadingSpinner  from './components/LoadingSpinner'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -73,6 +74,9 @@ export default function App() {
         } />
         <Route path="/register" element={
           <PublicRoute><Register /></PublicRoute>
+        } />
+        <Route path="/forgot-password" element={
+          <PublicRoute><ForgotPassword /></PublicRoute>
         } />
         <Route path="/setup" element={
           <PublicRoute><Setup /></PublicRoute>
