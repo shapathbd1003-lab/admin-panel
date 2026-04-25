@@ -22,16 +22,19 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <div className="logo-icon">
-          <svg viewBox="0 0 64 64" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
-            <path d="M32,8 C41,8 50,14 50,23 C50,38 40,47 32,51 C24,47 14,38 14,23 C14,14 23,8 32,8 Z"
-              fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5"/>
-            <path d="M42,36 L35,29 C36,27 35,24 33,22 C31,20 28,20 27,21 L30,24 L28,26 L24,23 C23,25 23,28 25,30 C27,32 29,32 31,31 L38,38 C39,39 40,39 41,38 L42,37 C43,36 43,36 42,36 Z"
-              fill="white"/>
-            <circle cx="44" cy="16" r="6" fill="#FFB300"/>
-            <circle cx="44" cy="16" r="2.8" fill="white"/>
-          </svg>
-        </div>
+        <svg viewBox="0 0 44 44" width="38" height="38" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+          {/* Indigo rounded-square background */}
+          <rect width="44" height="44" rx="10" fill="#0D1757"/>
+          {/* Shield */}
+          <path d="M22,6 C27,6 32,9 32,14 C32,22 27,27 22,30 C17,27 12,22 12,14 C12,9 17,6 22,6 Z"
+            fill="none" stroke="white" strokeWidth="1.8"/>
+          {/* Wrench */}
+          <path d="M28,24 L24,20 C24,18 24,16 22,15 C21,14 19,14 18,15 L20,17 L19,18 L16,16 C16,17 16,19 17,20 C19,22 20,22 21,21 L26,26 C26,27 27,27 27,26 L28,25 C29,24 29,24 28,24 Z"
+            fill="white"/>
+          {/* Gold dot */}
+          <circle cx="30" cy="10" r="4.5" fill="#FFB300"/>
+          <circle cx="30" cy="10" r="2" fill="white"/>
+        </svg>
         <span className="brand-name">মিস্ত্রি চাই</span>
         <span className="brand-badge">ADMIN</span>
       </div>
