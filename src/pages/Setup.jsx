@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { Link } from 'react-router-dom'
 import { auth } from '../firebase/config'
+import AppLogo from '../components/AppLogo'
 
 const ADMIN_EMAIL    = 'admin@test.com'
 const ADMIN_PASSWORD = '123456'
@@ -33,7 +34,7 @@ export default function Setup() {
       <div className="login-card" style={{ maxWidth: 420 }}>
 
         <div className="login-logo">
-          <div className="logo-circle">⚙️</div>
+          <AppLogo size={72} />
           <h1>Dev Setup</h1>
           <p>Create the default admin account for testing</p>
         </div>

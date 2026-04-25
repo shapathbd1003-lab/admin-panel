@@ -378,17 +378,13 @@ img    { max-width: 100%; display: block; }
 .login-logo {
   text-align: center;
   margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
-.login-logo .logo-circle {
-  width: 64px; height: 64px;
-  background: var(--primary-container);
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  margin: 0 auto 12px;
-}
-.login-logo h1 { font-size: 24px; font-weight: 800; color: var(--primary); }
-.login-logo p  { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.login-logo h1 { font-size: 24px; font-weight: 800; color: var(--primary); margin: 0; }
+.login-logo p  { font-size: 13px; color: var(--text-muted); margin: 0; }
 .form-group { margin-bottom: 16px; }
 .form-group label {
   display: block;

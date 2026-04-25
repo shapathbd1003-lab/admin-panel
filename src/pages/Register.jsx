@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { auth, db } from '../firebase/config'
+import AppLogo from '../components/AppLogo'
 
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_REGISTER_KEY ?? ''
 
@@ -89,7 +90,7 @@ export default function Register() {
       <div className="login-page">
         <div className="login-card">
           <div className="login-logo">
-            <div className="logo-circle">⛔</div>
+            <AppLogo size={72} />
             <h1>Invalid Link</h1>
             <p>This invite link has expired or already been used.</p>
           </div>
@@ -118,7 +119,7 @@ export default function Register() {
       <div className="login-card" style={{ maxWidth: 440 }}>
 
         <div className="login-logo">
-          <div className="logo-circle">🔧</div>
+          <AppLogo size={72} />
           <h1>Create Admin Account</h1>
           <p>
             {inviteToken && inviteValid

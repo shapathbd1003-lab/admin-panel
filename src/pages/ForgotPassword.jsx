@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { Link } from 'react-router-dom'
 import { auth } from '../firebase/config'
+import AppLogo from '../components/AppLogo'
 
 export default function ForgotPassword() {
   const [email,   setEmail]   = useState('')
@@ -31,7 +32,7 @@ export default function ForgotPassword() {
       <div className="login-card">
 
         <div className="login-logo">
-          <div className="logo-circle">🔑</div>
+          <AppLogo size={72} />
           <h1>Reset Password</h1>
           <p>We'll send a reset link to your email</p>
         </div>

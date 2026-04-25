@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useNavigate, Link } from 'react-router-dom'
 import { auth } from '../firebase/config'
+import AppLogo from '../components/AppLogo'
 
 const ERROR_MESSAGES = {
   'auth/invalid-credential':       'Invalid email or password.',
@@ -47,7 +48,7 @@ export default function Login() {
       <div className="login-card">
 
         <div className="login-logo">
-          <div className="logo-circle">🔧</div>
+          <AppLogo size={72} />
           <h1>মিস্ত্রি চাই</h1>
           <p>Sign in to manage service providers</p>
         </div>
