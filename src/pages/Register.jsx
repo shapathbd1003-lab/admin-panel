@@ -123,7 +123,7 @@ export default function Register() {
           <p>
             {inviteToken && inviteValid
               ? '✅ Valid invite link — fill in your details'
-              : 'Register to manage ServicePro platform'}
+              : 'Register to manage মিস্ত্রি চাই platform'}
           </p>
         </div>
 

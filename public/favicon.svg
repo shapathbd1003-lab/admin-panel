@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A237E"/>
+      <stop offset="100%" style="stop-color:#3949AB"/>
+    </linearGradient>
+  </defs>
+  <!-- Background square with rounded corners -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- Shield -->
+  <path d="M32,10 C40,10 48,15 48,23 C48,36 40,44 32,48 C24,44 16,36 16,23 C16,15 24,10 32,10 Z"
+        fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+  <!-- Wrench -->
+  <path d="M42,36 L35,29 C36,27 35,24 33,22 C31,20 28,20 27,21 L30,24 L28,26 L24,23 C23,25 23,28 25,30 C27,32 29,32 31,31 L38,38 C39,39 40,39 41,38 L42,37 C43,36 43,36 42,36 Z"
+        fill="white"/>
+  <!-- Gold dot -->
+  <circle cx="43" cy="15" r="5" fill="#FFB300"/>
+  <circle cx="43" cy="15" r="2.2" fill="white"/>
+</svg>

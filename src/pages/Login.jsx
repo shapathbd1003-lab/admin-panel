@@ -48,7 +48,7 @@ export default function Login() {
 
         <div className="login-logo">
           <div className="logo-circle">🔧</div>
-          <h1>ServicePro Admin</h1>
+          <h1>মিস্ত্রি চাই</h1>
           <p>Sign in to manage service providers</p>
         </div>
 
